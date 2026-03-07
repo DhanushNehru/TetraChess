@@ -1,0 +1,9 @@
+.chess-board { display: grid; grid-template-columns: repeat(14, 1fr); gap: 0; width: fit-content; border: 3px solid #333; }
+.square { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: all 0.2s; }
+.red-square { background: #ff6b6b; }
+.blue-square { background: #4ecdc4; }
+.yellow-square { background: #ffe66d; }
+.green-square { background: #95e1d3; }
+.square.selected { border: 3px solid gold; box-shadow: inset 0 0 10px rgba(255,215,0,0.5); }
+.square.valid-move { box-shadow: inset 0 0 15px rgba(76,175,80,0.6); border: 2px dashed #4caf50; }
+.piece { cursor: grab; user-select: none; }
