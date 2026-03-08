@@ -1,50 +1,99 @@
 .chess-board {
-	display: grid;
-	grid-template-columns: repeat(14, minmax(24px, 40px));
-	background: #102142;
-	border: 2px solid #ffffff66;
-	border-radius: 8px;
-	overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(14, minmax(28px, 48px));
+  border: 2px solid #4a6fa5;
+  border-radius: 4px;
+  overflow: hidden;
+  user-select: none;
 }
 
 .square {
-	width: 100%;
-	aspect-ratio: 1 / 1;
-	border: 1px solid #ffffff1c;
-	background: #0b2450;
-	color: #fff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	padding: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  cursor: default;
+  position: relative;
+  font-size: 0;
+  outline: none;
 }
 
-.square:nth-child(odd) {
-	background: #12336f;
+.square.dead {
+  background: transparent;
+  pointer-events: none;
+}
+
+.square.light {
+  background: #f0d9b5;
+}
+
+.square.dark {
+  background: #b58863;
+}
+
+.square.selected {
+  background: #ffff66 !important;
+}
+
+.square.valid-move {
+  cursor: pointer;
 }
 
 .square.last-move {
-	outline: 2px solid #ffd166;
-	z-index: 1;
+  background: #cdd26a !important;
+}
+
+.square.clickable {
+  cursor: pointer;
+}
+
+.move-dot {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  position: absolute;
+}
+
+.capture-ring {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 3px solid rgba(0, 0, 0, 0.25);
 }
 
 .piece {
-	font-weight: 700;
-	font-size: 14px;
-	user-select: none;
+  font-size: clamp(18px, 3vw, 34px);
+  line-height: 1;
+  z-index: 1;
+  font-weight: normal;
 }
 
-.empty-piece {
-	color: #ffffff30;
+.piece.white {
+  color: #fff;
+  text-shadow: 0 0 3px #000, 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.piece.black {
+  color: #1a1a2e;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.piece.red {
+  color: #c0392b;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.piece.blue {
+  color: #2471a3;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 680px) {
-	.chess-board {
-		grid-template-columns: repeat(14, minmax(18px, 24px));
-	}
-
-	.piece {
-		font-size: 11px;
-	}
+  .chess-board {
+    grid-template-columns: repeat(14, minmax(20px, 30px));
+  }
 }

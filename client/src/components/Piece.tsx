@@ -1,13 +1,26 @@
+import type { ChessPiece } from '../types';
+
 interface PieceProps {
-	symbol: string;
+  piece: ChessPiece | null;
 }
 
-function Piece({ symbol }: PieceProps) {
-	if (!symbol) {
-		return <span className="piece empty-piece">.</span>;
-	}
+const PIECE_UNICODE: Record<string, string> = {
+  K: '♚',
+  Q: '♛',
+  R: '♜',
+  B: '♝',
+  N: '♞',
+  P: '♟',
+};
 
-	return <span className="piece">{symbol}</span>;
+function Piece({ piece }: PieceProps) {
+  if (!piece) return null;
+
+  return (
+    <span className={`piece ${piece.color}`}>
+      {PIECE_UNICODE[piece.type] || piece.type}
+    </span>
+  );
 }
 
 export default Piece;

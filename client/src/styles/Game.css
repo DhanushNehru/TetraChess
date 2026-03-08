@@ -1,39 +1,299 @@
 .game-container {
-	min-height: 100vh;
-	background: radial-gradient(circle at 20% 15%, #1f3d7a, #081631 62%);
-	color: #ffffff;
-	padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  color: #e0e0e0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Waiting room */
+.waiting-room {
+  max-width: 600px;
+  margin: 20px auto;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.waiting-room h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.your-info {
+  font-size: 15px;
+}
+
+.invite-section {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.invite-hint {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.players-list h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.player-row.empty {
+  opacity: 0.4;
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.color-dot.white { background: #f5f5f5; border: 1px solid #999; }
+.color-dot.red { background: #e74c3c; }
+.color-dot.black { background: #34495e; }
+.color-dot.blue { background: #3498db; }
+.color-dot.empty { background: #555; }
+
+.color-label {
+  margin-left: auto;
+  font-size: 13px;
+  color: #aaa;
+}
+
+.color-badge {
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.color-badge.white { background: #f5f5f5; color: #333; }
+.color-badge.red { background: #e74c3c; color: #fff; }
+.color-badge.black { background: #34495e; color: #fff; }
+.color-badge.blue { background: #3498db; color: #fff; }
+
+.hint-text {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Game header */
 .game-header {
-	max-width: 1100px;
-	margin: 0 auto 18px;
-	background: rgba(255, 255, 255, 0.08);
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	border-radius: 12px;
-	padding: 16px;
+  width: 100%;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
 }
 
-.game-header h2,
-.game-header p {
-	margin: 0 0 6px;
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-top h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.player-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.white { background: #f5f5f5; color: #333; }
+.badge.red { background: #e74c3c; color: #fff; }
+.badge.black { background: #34495e; color: #fff; }
+.badge.blue { background: #3498db; color: #fff; }
+.badge.eliminated { opacity: 0.35; text-decoration: line-through; }
+.badge.active-turn { outline: 2px solid #ffd700; outline-offset: 1px; }
+
+.status-text {
+  font-size: 13px;
+  color: #ccc;
+  margin: 4px 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.btn-primary { background: #3498db; color: #fff; }
+.btn-secondary { background: rgba(255, 255, 255, 0.1); color: #ccc; }
+.btn-invite { background: #27ae60; color: #fff; width: 100%; }
+.btn-start { background: #f39c12; color: #fff; padding: 14px; font-size: 16px; width: 100%; }
+.btn-leave { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-small:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Board area */
+.game-board {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 24px;
+}
+
+/* Rules panel */
+.rules-panel {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 8px 0;
+  max-width: 800px;
+  width: 100%;
+}
+
+.rules-panel h3 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.rule-section h4 {
+  margin: 0 0 8px;
+  color: #3498db;
+  font-size: 15px;
+}
+
+.rule-section ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.rule-section li {
+  margin-bottom: 5px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+/* Game over */
+.game-over-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.game-over-card {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.game-over-card h2 {
+  margin: 0 0 16px;
+  font-size: 28px;
+}
+
+.game-over-card p {
+  font-size: 18px;
+  margin-bottom: 24px;
 }
 
 .status-line {
-	color: #c9f0ff;
+  color: #8ab4f8;
+  font-size: 13px;
+  margin-top: 8px;
+  text-align: center;
 }
 
-.btn-clear {
-	margin-top: 8px;
-	border: 0;
-	border-radius: 8px;
-	padding: 8px 12px;
-	font-weight: 600;
-	cursor: pointer;
-}
+@media (max-width: 680px) {
+  .game-container {
+    padding: 8px;
+  }
 
-.game-board {
-	display: flex;
-	justify-content: center;
-	padding-bottom: 20px;
+  .waiting-room {
+    padding: 16px;
+  }
+
+  .rules-grid {
+    grid-template-columns: 1fr;
+  }
 }
