@@ -1,5 +1,13 @@
-import React from "react";
+interface PieceProps {
+	symbol: string;
+}
 
-const Piece: React.FC = () => <div>Piece</div>;
+function Piece({ symbol }: PieceProps) {
+	if (!symbol) {
+		return <span className="piece empty-piece">.</span>;
+	}
+
+	return <span className="piece">{symbol}</span>;
+}
 
 export default Piece;

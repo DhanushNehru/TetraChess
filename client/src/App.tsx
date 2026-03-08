@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Socket } from 'socket.io-client';
+import { useState } from 'react';
+import type { Socket } from 'socket.io-client';
 import Lobby from './components/Lobby';
 import Game from './components/Game';
 import './App.css';
@@ -10,15 +10,20 @@ function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
 
-  const handleGameStart = (newRoomId: string, newSocket: Socket) => {
+  const handleGameStart = (newRoomId: string, newSocket: Socket, newPlayerName: string) => {
     setRoomId(newRoomId);
     setSocket(newSocket);
+    setPlayerName(newPlayerName);
     setGameState('game');
   };
 
   const handleReturnToLobby = () => {
     setGameState('lobby');
-    if (socket) socket.disconnect();
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
+    setRoomId('');
   };
 
   return (
@@ -27,7 +32,7 @@ function App() {
         <Lobby onGameStart={handleGameStart} />
       ) : (
         <div>
-          <button className="back-btn" onClick={handleReturnToLobby}>← Back to Lobby</button>
+          <button className="back-btn" onClick={handleReturnToLobby}>Back to Lobby</button>
           {socket && <Game roomId={roomId} socket={socket} playerName={playerName} />}
         </div>
       )}
