@@ -1,4 +1,0 @@
-.game-container { min-height: 100vh; background: #1a1a2e; color: white; padding: 20px; }
-.game-header { background: rgba(102, 126, 234, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #667eea; }
-.game-info { display: flex; gap: 30px; margin-top: 10px; }
-.game-board { display: flex; justify-content: center; padding: 20px; }
