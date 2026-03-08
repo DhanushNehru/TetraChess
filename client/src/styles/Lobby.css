@@ -1,0 +1,24 @@
+.lobby-container { min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+.name-entry { display: flex; align-items: center; justify-content: center; }
+.name-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: center; max-width: 400px; }
+.name-card h1 { color: #333; margin-bottom: 10px; font-size: 2.5em; }
+.subtitle { color: #666; margin-bottom: 30px; }
+.name-input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+.lobby-header { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+.lobby-header h1 { color: #667eea; margin: 0 0 10px 0; }
+.player-name { color: #666; margin: 5px 0; }
+.lobby-content { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+.room-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; cursor: pointer; transition: transform 0.3s; }
+.room-card:hover { transform: translateY(-5px); }
+.room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.room-header h3 { margin: 0; font-size: 1.3em; }
+.badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+.badge-public { background: rgba(255,255,255,0.3); }
+.badge-private { background: rgba(0,0,0,0.2); }
+.btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; transition: all 0.3s; }
+.btn-primary { background: #667eea; color: white; }
+.btn-primary:hover { background: #5568d3; }
+.btn-secondary { background: #ddd; color: #333; }
+.btn-success { background: #48bb78; color: white; }
+.btn-block { width: 100%; }
