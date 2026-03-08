@@ -11,6 +11,10 @@ interface LobbyProps {
   onGameStart: (roomId: string, socket: Socket, playerName: string) => void;
 }
 
+interface JoinSuccessPayload {
+  roomId: string;
+}
+
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
 const sanitizeRoomId = (value: string) => value.trim().replace(/\s+/g, '-').slice(0, 24);
@@ -18,11 +22,18 @@ const sanitizeRoomId = (value: string) => value.trim().replace(/\s+/g, '-').slic
 function Lobby({ onGameStart }: LobbyProps) {
   const socketRef = useRef<Socket | null>(null);
   const joinedRoomRef = useRef(false);
+  const pendingJoinRef = useRef('');
+  const playerNameRef = useRef('');
   const [name, setName] = useState('');
   const [roomInput, setRoomInput] = useState('');
   const [rooms, setRooms] = useState<RoomSummary[]>([]);
   const [status, setStatus] = useState('Connecting...');
   const [error, setError] = useState('');
+  const [joiningRoomId, setJoiningRoomId] = useState('');
+
+  useEffect(() => {
+    playerNameRef.current = name.trim();
+  }, [name]);
 
   useEffect(() => {
     const socket = io(SERVER_URL, {
@@ -46,25 +57,46 @@ function Lobby({ onGameStart }: LobbyProps) {
       setRooms(sortedRooms);
     };
 
+    const handleJoinSuccess = (payload: JoinSuccessPayload) => {
+      const activeName = playerNameRef.current;
+      if (!activeName) {
+        setError('Enter your name before joining a room.');
+        return;
+      }
+
+      if (pendingJoinRef.current && payload.roomId !== pendingJoinRef.current) {
+        return;
+      }
+
+      joinedRoomRef.current = true;
+      pendingJoinRef.current = '';
+      setJoiningRoomId('');
+      onGameStart(payload.roomId, socket, activeName);
+    };
+
     const handleServerError = (message: string) => {
+      pendingJoinRef.current = '';
+      setJoiningRoomId('');
       setError(message);
     };
 
     socket.on('connect', handleConnect);
     socket.on('connect_error', handleConnectError);
     socket.on('room_list', handleRoomList);
+    socket.on('joined_game', handleJoinSuccess);
     socket.on('error', handleServerError);
 
     return () => {
       socket.off('connect', handleConnect);
       socket.off('connect_error', handleConnectError);
       socket.off('room_list', handleRoomList);
+      socket.off('joined_game', handleJoinSuccess);
       socket.off('error', handleServerError);
       if (!joinedRoomRef.current) {
         socket.disconnect();
       }
     };
-  }, []);
+  }, [onGameStart]);
 
   const playerName = useMemo(() => name.trim(), [name]);
 
@@ -87,9 +119,9 @@ function Lobby({ onGameStart }: LobbyProps) {
     }
 
     setError('');
+    pendingJoinRef.current = roomId;
+    setJoiningRoomId(roomId);
     socket.emit('join_game', roomId);
-    joinedRoomRef.current = true;
-    onGameStart(roomId, socket, playerName);
   };
 
   const createAndJoinRoom = () => {
@@ -162,7 +194,7 @@ function Lobby({ onGameStart }: LobbyProps) {
                     disabled={room.count >= 4}
                     onClick={() => joinRoom(room.id)}
                   >
-                    {room.count >= 4 ? 'Full' : 'Join'}
+                    {room.count >= 4 ? 'Full' : joiningRoomId === room.id ? 'Joining...' : 'Join'}
                   </button>
                 </div>
               ))}

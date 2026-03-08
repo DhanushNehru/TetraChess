@@ -66,6 +66,7 @@ io.on('connection', (socket: Socket) => {
     }
 
     console.log(`User ${socket.id} joined room ${roomId}`);
+    socket.emit('joined_game', { roomId });
     io.emit('room_list', Object.values(rooms).map(r => ({ id: r.id, count: r.players.length })));
   });
 
