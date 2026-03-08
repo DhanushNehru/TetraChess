@@ -1,0 +1,4 @@
+# This file previously contained a large base64-encoded artifact (update.b64).
+# The encoded artifact should not be stored in git. Instead, store the source
+# from which it is generated, or fetch/generate the artifact at build time
+# (or use Git LFS / an external artifact repository if it must be versioned).
