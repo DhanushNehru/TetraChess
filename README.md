@@ -71,6 +71,15 @@ The `client` directory includes a `vercel.json` file ensuring React Router paths
 ### Backend
 Deploy the `/server` directory to a Node.js hosting provider (such as Render, Heroku, or Railway). A `/health` GET endpoint is already provided in the Express app for load-balancer health checks.
 
+Set these backend environment variables on Render:
+
+- `PORT=3001` (or leave default assigned by platform)
+- `CORS_ORIGINS=https://tetrachess.vercel.app`
+
+If you add a custom frontend domain, include both origins:
+
+- `CORS_ORIGINS=https://tetrachess.vercel.app,https://yourdomain.com`
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!
