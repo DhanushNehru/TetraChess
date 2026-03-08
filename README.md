@@ -65,6 +65,8 @@ This codebase is pre-configured for modern hosting providers.
 ### Frontend
 The `client` directory includes a `vercel.json` file ensuring React Router paths correctly redirect to `index.html`. You can deploy the `/client` folder directly to **Vercel**.
 > **Important**: Ensure you set the `VITE_SERVER_URL` environment variable in Vercel to point to your deployed backend URL.
+>
+> For this project, set: `VITE_SERVER_URL=https://tetrachess.onrender.com`
 
 ### Backend
 Deploy the `/server` directory to a Node.js hosting provider (such as Render, Heroku, or Railway). A `/health` GET endpoint is already provided in the Express app for load-balancer health checks.
