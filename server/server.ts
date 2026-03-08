@@ -181,6 +181,22 @@ io.on('connection', (socket: Socket) => {
     });
   });
 
+  /* Turn timeout — only the active player's client sends this */
+  socket.on('turn_timeout', (rawId: unknown) => {
+    if (typeof rawId !== 'string') return;
+    const room = rooms[sanitize(rawId)];
+    if (!room?.started) return;
+    const player = room.players.find((p) => p.socketId === socket.id);
+    if (!player || player.color !== room.currentTurnColor) return;
+
+    room.currentTurnColor = nextTurn(room);
+    io.to(room.id).emit('turn_skipped', {
+      skippedColor: player.color,
+      skippedName: player.name,
+      nextTurnColor: room.currentTurnColor,
+    });
+  });
+
   /* King captured */
   socket.on('king_captured', (data: unknown) => {
     if (!data || typeof data !== 'object') return;

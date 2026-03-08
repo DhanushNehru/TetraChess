@@ -129,33 +129,173 @@
   gap: 8px;
 }
 
-.turn-indicator {
+/* Turn timer */
+.turn-timer {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.player-badges {
-  display: flex;
   gap: 6px;
-  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #7fdbca;
+  transition: color 0.3s, background 0.3s;
 }
 
-.badge {
-  padding: 4px 10px;
-  border-radius: 12px;
+.turn-timer.urgent {
+  color: #f39c12;
+  background: rgba(243, 156, 18, 0.15);
+}
+
+.turn-timer.critical {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.2);
+  animation: timer-pulse 0.6s ease-in-out infinite;
+}
+
+.timer-icon {
+  font-size: 18px;
+}
+
+.timer-value {
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+  text-align: center;
+}
+
+@keyframes timer-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Turn banner */
+.turn-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.turn-banner.white { background: rgba(245, 245, 245, 0.1); border-color: rgba(245, 245, 245, 0.4); }
+.turn-banner.red { background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.4); }
+.turn-banner.black { background: rgba(52, 73, 94, 0.15); border-color: rgba(52, 73, 94, 0.5); }
+.turn-banner.blue { background: rgba(52, 152, 219, 0.1); border-color: rgba(52, 152, 219, 0.4); }
+
+.turn-banner.my-turn {
+  animation: my-turn-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes my-turn-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+}
+
+.color-dot.large {
+  width: 20px;
+  height: 20px;
+}
+
+.turn-text {
+  font-weight: 700;
+  font-size: 16px;
+  flex: 1;
+}
+
+.next-up {
   font-size: 12px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+/* Player cards row */
+.player-cards {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 6px 0;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+  font-size: 13px;
+}
+
+.player-card.active-turn {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  transform: scale(1.05);
+  animation: card-pulse 1.5s ease-in-out infinite;
+}
+
+.player-card.next-turn {
+  border-color: rgba(255, 255, 255, 0.25);
+  border-style: dashed;
+}
+
+.player-card.eliminated {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+@keyframes card-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.45); }
+}
+
+.player-card-name {
   font-weight: 600;
 }
 
-.badge.white { background: #f5f5f5; color: #333; }
-.badge.red { background: #e74c3c; color: #fff; }
-.badge.black { background: #34495e; color: #fff; }
-.badge.blue { background: #3498db; color: #fff; }
-.badge.eliminated { opacity: 0.35; text-decoration: line-through; }
-.badge.active-turn { outline: 2px solid #ffd700; outline-offset: 1px; }
+.player-card-side {
+  color: #888;
+  font-size: 11px;
+}
+
+.turn-badge {
+  background: #ffd700;
+  color: #1a1a2e;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  animation: badge-blink 1s ease-in-out infinite;
+}
+
+.next-badge {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ccc;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.elim-badge {
+  background: rgba(231, 76, 60, 0.3);
+  color: #e74c3c;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+@keyframes badge-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
 
 .status-text {
   font-size: 13px;

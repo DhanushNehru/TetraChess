@@ -4,12 +4,15 @@ import type { Cell, PlayerColor } from '../types';
 import {
   COLOR_NAMES,
   COLOR_SIDES,
+  PLAYER_COLORS,
   applyMove,
   createInitialBoard,
   getValidMoves,
 } from '../gameLogic';
 import Board from './Board';
 import '../styles/Game.css';
+
+const TURN_TIME = 60; // seconds per turn
 
 interface GameProps {
   roomId: string;
@@ -36,11 +39,34 @@ function Game({ roomId, socket, playerName, myColor, initialPlayers, onLeave }: 
   const [winner, setWinner] = useState<{ color: PlayerColor; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const [turnTimer, setTurnTimer] = useState(TURN_TIME);
+
   const myColorRef = useRef(myColor);
   const boardRef = useRef(board);
   boardRef.current = board;
+  const turnColorRef = useRef(currentTurnColor);
+  turnColorRef.current = currentTurnColor;
 
   const isMyTurn = phase === 'playing' && currentTurnColor === myColor;
+
+  /* ── Turn timer ── */
+  useEffect(() => {
+    if (phase !== 'playing') return;
+    setTurnTimer(TURN_TIME);
+    const interval = setInterval(() => {
+      setTurnTimer((prev) => {
+        if (prev <= 1) {
+          // Time ran out — if it's our turn, tell the server to skip
+          if (turnColorRef.current === myColorRef.current) {
+            socket.emit('turn_timeout', roomId);
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [phase, currentTurnColor, socket, roomId]);
 
   /* ── Socket listeners ── */
   useEffect(() => {
@@ -58,6 +84,7 @@ function Game({ roomId, socket, playerName, myColor, initialPlayers, onLeave }: 
       setValidMoves([]);
       setLastMove(null);
       setEliminated(new Set());
+      setTurnTimer(TURN_TIME);
       setStatusText(`Game started! ${COLOR_NAMES[data.currentTurnColor]}'s turn.`);
     };
 
@@ -83,6 +110,13 @@ function Game({ roomId, socket, playerName, myColor, initialPlayers, onLeave }: 
 
     const onTurnChanged = (data: { currentTurnColor: PlayerColor }) => {
       setCurrentTurnColor(data.currentTurnColor);
+    };
+
+    const onTurnSkipped = (data: { skippedColor: PlayerColor; skippedName: string; nextTurnColor: PlayerColor }) => {
+      setCurrentTurnColor(data.nextTurnColor);
+      setSelectedSquare(null);
+      setValidMoves([]);
+      setStatusText(`⏱ ${data.skippedName} (${COLOR_NAMES[data.skippedColor]}) ran out of time! ${COLOR_NAMES[data.nextTurnColor]}'s turn.`);
     };
 
     const onPlayerEliminated = (data: { color: PlayerColor; name: string }) => {
@@ -111,6 +145,7 @@ function Game({ roomId, socket, playerName, myColor, initialPlayers, onLeave }: 
     socket.on('game_started', onGameStarted);
     socket.on('move_made', onMoveMade);
     socket.on('turn_changed', onTurnChanged);
+    socket.on('turn_skipped', onTurnSkipped);
     socket.on('player_eliminated', onPlayerEliminated);
     socket.on('player_disconnected', onPlayerDisconnected);
     socket.on('game_over', onGameOver);
@@ -121,6 +156,7 @@ function Game({ roomId, socket, playerName, myColor, initialPlayers, onLeave }: 
       socket.off('game_started', onGameStarted);
       socket.off('move_made', onMoveMade);
       socket.off('turn_changed', onTurnChanged);
+      socket.off('turn_skipped', onTurnSkipped);
       socket.off('player_eliminated', onPlayerEliminated);
       socket.off('player_disconnected', onPlayerDisconnected);
       socket.off('game_over', onGameOver);
@@ -231,30 +267,64 @@ function Game({ roomId, socket, playerName, myColor, initialPlayers, onLeave }: 
     );
   }
 
+  /* ── Derived: next turn after current ── */
+  const nextTurnColor = (() => {
+    const activePlayers = players.filter((p) => !eliminated.has(p.color));
+    if (activePlayers.length === 0) return currentTurnColor;
+    const activeColors = activePlayers.map((p) => p.color);
+    const curIdx = PLAYER_COLORS.indexOf(currentTurnColor);
+    for (let i = 1; i <= 4; i++) {
+      const c = PLAYER_COLORS[(curIdx + i) % 4];
+      if (activeColors.includes(c)) return c;
+    }
+    return currentTurnColor;
+  })();
+
+  const timerUrgent = turnTimer <= 10;
+  const timerCritical = turnTimer <= 5;
+
   /* ── Active game ── */
   return (
     <div className="game-container">
       <header className="game-header">
         <div className="header-top">
           <h2>Room: {roomId}</h2>
+          <div className={`turn-timer ${timerUrgent ? 'urgent' : ''} ${timerCritical ? 'critical' : ''}`}>
+            <span className="timer-icon">⏱</span>
+            <span className="timer-value">{turnTimer}s</span>
+          </div>
           <button className="btn btn-small" onClick={onLeave}>Leave</button>
         </div>
-        <div className="header-info">
-          <div className="turn-indicator">
-            <span className={`color-dot ${currentTurnColor}`} />
-            <span>{isMyTurn ? '✨ Your turn!' : `${COLOR_NAMES[currentTurnColor]}'s turn`}</span>
-          </div>
-          <div className="player-badges">
-            {players.map((p) => (
-              <span
-                key={p.color}
-                className={`badge ${p.color} ${eliminated.has(p.color) ? 'eliminated' : ''} ${p.color === currentTurnColor && phase === 'playing' ? 'active-turn' : ''}`}
-              >
-                {p.name}
-              </span>
-            ))}
-          </div>
+
+        <div className={`turn-banner ${currentTurnColor} ${isMyTurn ? 'my-turn' : ''}`}>
+          <span className={`color-dot large ${currentTurnColor}`} />
+          <span className="turn-text">
+            {isMyTurn ? '✨ Your turn — make a move!' : `${COLOR_NAMES[currentTurnColor]}'s turn`}
+          </span>
+          <span className="next-up">Up next: {COLOR_NAMES[nextTurnColor]}</span>
         </div>
+
+        <div className="player-cards">
+          {players.map((p) => {
+            const isTurn = p.color === currentTurnColor && phase === 'playing';
+            const isNext = p.color === nextTurnColor && phase === 'playing' && !isTurn;
+            const isElim = eliminated.has(p.color);
+            return (
+              <div
+                key={p.color}
+                className={`player-card ${p.color} ${isTurn ? 'active-turn' : ''} ${isNext ? 'next-turn' : ''} ${isElim ? 'eliminated' : ''}`}
+              >
+                <span className={`color-dot ${p.color}`} />
+                <span className="player-card-name">{p.name}</span>
+                <span className="player-card-side">{COLOR_SIDES[p.color]}</span>
+                {isTurn && <span className="turn-badge">Playing</span>}
+                {isNext && !isElim && <span className="next-badge">Next</span>}
+                {isElim && <span className="elim-badge">Out</span>}
+              </div>
+            );
+          })}
+        </div>
+
         <p className="status-text">{statusText}</p>
         <div className="header-actions">
           <button className="btn btn-small" onClick={() => setShowRules(!showRules)}>
