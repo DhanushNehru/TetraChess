@@ -5,15 +5,47 @@ import cors from 'cors';
 
 const app = express();
 
-// Important for deployment (e.g. Vercel frontend talking to Render backend)
-const allowedOrigins = [
-  'http://localhost:5173', // Dev frontend
-  'https://tetrachess.vercel.app', // Example production Vercel frontend URL
-  /\.vercel\.app$/ // Allow any vercel preview deployments
-];
+// CORS can be overridden in hosting env with:
+// CORS_ORIGINS=https://tetrachess.vercel.app,https://your-custom-domain.com
+const configuredOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = configuredOrigins.length > 0
+  ? configuredOrigins
+  : [
+      'http://localhost:5173',
+      'https://tetrachess.vercel.app',
+    ];
+
+const allowedOriginSet = new Set(allowedOrigins);
+const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+\.vercel\.app$/;
+
+const isAllowedOrigin = (origin?: string) => {
+  if (!origin) {
+    // Allow non-browser requests (health checks, curl, etc.)
+    return true;
+  }
+
+  if (allowedOriginSet.has(origin)) {
+    return true;
+  }
+
+  return vercelPreviewRegex.test(origin);
+};
+
+const corsOrigin: cors.CorsOptions['origin'] = (origin, callback) => {
+  if (isAllowedOrigin(origin)) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error(`CORS blocked for origin: ${origin}`));
+};
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: corsOrigin,
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -21,7 +53,7 @@ app.use(cors({
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: corsOrigin,
     methods: ['GET', 'POST'],
     credentials: true
   },
