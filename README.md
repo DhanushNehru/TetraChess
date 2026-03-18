@@ -2,8 +2,9 @@
 
 <div align="center">
   <h3>A modern, open-source 4-Player Chess variant built for the web.</h3>
-  <img src="https://img.shields.io/github/license/DhanushNehru/TetraChess" alt="License" />
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" />
+
+  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/DhanushNehru/TetraChess/pulls)
 </div>
 
 <br />
